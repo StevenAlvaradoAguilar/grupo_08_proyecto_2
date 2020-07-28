@@ -14,11 +14,12 @@
 % Andres López Sánchez | 2019160378
 % Fabian López Sánchez | 2019064821
 %
+
 clc
 clear
 
 % Open file for output data
-fid = fopen('output_data.txt', 'w');
+fid = fopen('output.txt', 'w');
     
     for idx = 1 : 1 : 73
         angle   = (idx-1) * 5 * pi / 180;
@@ -36,7 +37,7 @@ fid = fopen('output_data.txt', 'w');
         
         % Write output to file
         fprintf(fid, "Octant = %d; X = %5d ; Y = %5d; Angle: %3d;  theta = %7d\n", ...
-        octant, cos_val, sin_val, (idx-1) * 5, theta);
+            octant, cos_val, sin_val, (idx-1) * 5, theta);
     end
     
 fclose(fid);

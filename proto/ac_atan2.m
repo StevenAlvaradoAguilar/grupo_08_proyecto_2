@@ -22,13 +22,17 @@ function [theta, octant] = ac_atan2(real_part, imag_part)
   real_mult_imag = real_part * imag_part;
   num_pot_15 = 2 * 2 * 2 * 2 * 2 * 2 * 2 * 2 * 2 * 2 * 2 * 2 * 2 * 2 * 2;
   pi_round = round(3.141592654 * num_pot_15);
-  pi_half = pi_round / 2; 
-  %The real variables
+  pi_n_round = -pi_round;
+  pi_half = pi_round / (2);
+  pi_n_half = -pi_half;
+  pi_quarts = pi_round / 4;
+  pi_n_quarts = -pi_quarts;
+  three_pi_quarts = (3 * pi_round) / 4;
+  three_n_pi_quarts = -three_pi_quarts;
+  
   x_pot_2 = real_part * real_part;
   x_mov_2_right = bitshift(x_pot_2, -2);
   x_mov_5_right = bitshift(x_pot_2, -5);
-  
-  %The imagenary variables
   y_pot_2 = imag_part * imag_part;
   y_mov_2_right = bitshift(y_pot_2,-2);
   y_mov_5_right = bitshift(y_pot_2,-5);
@@ -41,133 +45,191 @@ function [theta, octant] = ac_atan2(real_part, imag_part)
       return;
     
     endif
+  %The angle 0 and 360
+  if real_part > 0 && imag_part == 0
+    octant = 0;
+    theta = 0;
+    return;
+    
+  endif
   
-    %The basics functions
-
-    if real_part == 0 && imag_part > 0
+  %The angle 45°
+  if real_part == imag_part && real_part > 0
       
       octant = 0;
-      theta = round(pi_round / 2);
+      theta = round(pi_quarts);
       return;
-      
-    endif
+    
+   endif
    
-    if real_part == 0 && imag_part < 0
+   %The angle 90°
+  if real_part == 0 && imag_part > 0
       
       octant = 0;
-      theta = -pi_round / 2;
+      theta = round(pi_half);
       return;
+    
+   endif
+   
+   %The angle 135°
+  if abs(real_part) == imag_part > 0
       
+      octant = 0;
+      theta = round(three_pi_quarts);
+      return;
+    
+   endif
+   
+    %The angle 180°
+  if real_part < 0 && imag_part == 0
+      
+      octant = 0;
+      theta = round(pi_round);
+      return;
+    
+   endif
+   
+   %The angle 225°
+  if abs(real_part) == abs(imag_part) && real_part < 0
+      
+      octant = 0;
+      theta = round(three_n_pi_quarts);
+      return;
+    
+   endif
+   
+   %The angle 270°
+  if real_part == 0 && imag_part < 0
+      
+      octant = 0;
+      theta = round(pi_n_half);
+      return;
+    
+   endif
+   
+   %The angle 315°
+  if real_part == abs(imag_part)
+      
+      octant = 0;
+      theta = round(pi_n_quarts);
+      return;
+    
+   endif
+  
+   %The quadrant 1
+   if real_part >= 0 && imag_part >= 0
+     
+     %The octan 1
+     if real_part > imag_part 
+      
+          octant = 1;
+          theta1 = x_pot_2 + y_mov_2_right + y_mov_5_right;  
+          theta1 = bitshift(theta1, -15);
+          theta1 = real_mult_imag / (theta1);
+          theta = round(theta1);
+          return;
+          
+     endif
+     
+     %The octan 2
+     if real_part <= imag_part
+       
+       octant = 2;
+       thet1 = y_pot_2 + y_mov_2_right + y_mov_5_right;
+       theta1 = bitshift(thet1, -15);
+       theta1 = real_mult_imag / (theta1);
+       theta = round(pi_half - theta1);
+       return;
+        
      endif
     
-    if real_part == imag_part
-      
-      octant = 0;
-      theta = round(pi_round / 4);
-      return;
-      
-    endif
-    
-    if real_part == abs(imag_part) && imag_part < 0
-      
-      octant = 0;
-      theta = round(-pi_round / 4) ;
-      return;
-      
-    endif
-    
-    if real_part == 0 && imag_part > 0
-      
-      octant = 0;
-      theta = pi_round;
-      return;
-      
-    endif
-    
-    if real_part == 0 && imag_part < 0
-      
-      octant = 0;
-      theta = -pi_round;
-      theta = theta;
-      return;
-      
-    endif
-    
-    %The octan 1
-    if (real_part > 0 && imag_part < real_part)
-      
-      octant = 1;
-      theta = imag_part / real_part;
-      return;
-    endif
-     
-    %The octan 2 
-    if (imag_part > 0 && real_part < imag_part)
-      
-      octant = 2;
-      theta =  real_part / imag_part;
-      return;
-       
-    endif
-    
-  %The octan 3  
-    if (imag_part < 0 && real_part > 0)
-      
-     octant = 3;
-     theta =  real_part / imag_part;
-     theta = pi_half - theta;
-     return;
-      
-    endif
-     
-   %The octan 4
-   if (real_part > 0 && imag_part > 0)
-      
-     octant = 4;
-     theta =  real_part / imag_part;
-     theta = -pi_half - theta;
-     return;
-      
-   endif
-    
-   %The octan 5 
-   if (real_part < 0 && imag_part < 0 )
-      
-     octant = 5;
-     theta = real_part / imag_part;
-     theta = - pi_half - theta;
-     return;
-       
-    endif
-  
-  %The octan 6
-   if (imag_part < 0 && real_part < 0)
-      
-     octant = 6;
-     theta = imag_part / real_part;
-     theta = - pi_half - theta;
-     return;
-      
    endif
    
-   %The octan 7
-   if (imag_part > 0 && real_part < 0)
-      
-     octant = 7;
-     theta = imag_part / real_part;
-     theta = theta + pi_round;
-     return;
-      
-   endif
+   %The quadrant 2
+   if real_part < 0 && imag_part >= 0
+     
+     %The octan 3
+     if abs(real_part) <= imag_part 
+       
+       octant = 3;
+       thet1 = y_pot_2 + y_mov_2_right + y_mov_5_right;
+       theta1 = bitshift(thet1, -15);
+       theta1 = real_mult_imag / (theta1);
+       theta = round(pi_half - theta1);
+          return;
+          
+     endif
+     
+     %The octan 4
+     if abs(real_part) > imag_part 
+       
+       octant = 4;
+       theta1 = x_pot_2 + y_mov_2_right + y_mov_5_right;  
+       theta1 = bitshift(theta1, -15);
+       theta1 = real_mult_imag / (theta1);
+       theta = round(pi_round + theta1);
+       return;
+        
+     endif
     
-   %The octan 8
-   if (real_part > 0 && imag_part < 0)
+   endif
+   
+   %The quadrant 3
+   if real_part < 0 && imag_part < 0
+     
+     %The octan 5
+     if abs(real_part) > abs(imag_part)
       
-     octant = 8;
-     theta = imag_part / real_part;
-     theta = theta - pi_round;
-     return;
+      octant = 5;
+      theta1 = x_pot_2 + y_mov_2_right + y_mov_5_right;  
+      theta1 = bitshift(theta1, -15);
+      theta1 = real_mult_imag / (theta1);
+      theta = round(pi_n_round + theta1);
+      return;
+        
+     endif
+     
+     %The octan 6
+     if abs(real_part) <= abs(imag_part) 
       
-   endif 
+      octant = 6;
+      theta1 = y_pot_2 + y_mov_2_right + y_mov_5_right;  
+      theta1 = bitshift(theta1, -15);
+      theta1 = real_mult_imag / (theta1);
+      theta = round(pi_n_half - theta1);
+      return;   
+          
+     endif
+    
+   endif
+   
+   %The quadrant 4
+   if real_part >= 0 && imag_part < 0
+     
+     %The octan 7
+     if real_part <= abs(imag_part)
+       
+       octant = 7;
+       theta1 = y_pot_2 + y_mov_2_right + y_mov_5_right;  
+       theta1 = bitshift(theta1, -15);
+       theta1 = real_mult_imag / (theta1);
+       theta = round(pi_n_half - theta1);
+       return;
+        
+     endif
+     
+     %The octan 8
+     if real_part > abs(imag_part) 
+       
+       octant = 8;
+       theta1 = x_pot_2 + y_mov_2_right + y_mov_5_right;  
+       theta1 = bitshift(theta1, -15);
+       theta1 = real_mult_imag / (theta1);
+       theta = round(theta1);
+       return;
+          
+     endif
+    
+   endif
     
 end
