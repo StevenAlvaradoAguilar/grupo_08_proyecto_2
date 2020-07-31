@@ -20,12 +20,12 @@
 function [theta, octant] = ac_atan2(real_part, imag_part)
   
   real_mult_imag = real_part * imag_part;
-  num_pot_15 = 2 * 2 * 2 * 2 * 2 * 2 * 2 * 2 * 2 * 2 * 2 * 2 * 2 * 2 * 2;
-  pi_round = round(3.141592654 * num_pot_15);
+  num_pot_15 = 2 * 2 * 2 * 2 * 2 * 2 * 2 * 2 * 2 * 2 * 2 * 2 * 2 * 2 * 2; % DK: Esto es 2^15
+  pi_round = round(3.141592654 * num_pot_15);                             % DK: Poner valor entero exacto, no calculado
   pi_n_round = -pi_round;
   pi_half = pi_round / (2);
   pi_n_half = -pi_half;
-  pi_quarts = pi_round / 4;
+  pi_quarts = pi_round / 4;                                               % DK: Poner valor entero exacto, no calculado
   pi_n_quarts = -pi_quarts;
   three_pi_quarts = (3 * pi_round) / 4;
   three_n_pi_quarts = -three_pi_quarts;
@@ -123,7 +123,7 @@ function [theta, octant] = ac_atan2(real_part, imag_part)
      if real_part > imag_part 
       
           octant = 1;
-          theta1 = x_pot_2 + y_mov_2_right + y_mov_5_right;  
+          theta1 = x_pot_2 + y_mov_2_right + y_mov_5_right;  % DK: Hacer esto sólo una vez arriba y poner en una variable
           theta1 = bitshift(theta1, -15);
           theta1 = real_mult_imag / (theta1);
           theta = round(theta1);
@@ -135,10 +135,10 @@ function [theta, octant] = ac_atan2(real_part, imag_part)
      if real_part <= imag_part
        
        octant = 2;
-       thet1 = y_pot_2 + y_mov_2_right + y_mov_5_right;
+       thet1 = y_pot_2 + x_mov_2_right + x_mov_5_right;       % DK: Hacer esto sólo una vez arriba y poner en una variable
        theta1 = bitshift(thet1, -15);
        theta1 = real_mult_imag / (theta1);
-       theta = round(pi_half - theta1);
+       theta = round(pi_half - theta1); %DK: Usar mayusculas para constantes
        return;
         
      endif
@@ -152,7 +152,7 @@ function [theta, octant] = ac_atan2(real_part, imag_part)
      if abs(real_part) <= imag_part 
        
        octant = 3;
-       thet1 = y_pot_2 + y_mov_2_right + y_mov_5_right;
+       thet1 = y_pot_2 + x_mov_2_right + x_mov_5_right;
        theta1 = bitshift(thet1, -15);
        theta1 = real_mult_imag / (theta1);
        theta = round(pi_half - theta1);
@@ -161,7 +161,7 @@ function [theta, octant] = ac_atan2(real_part, imag_part)
      endif
      
      %The octan 4
-     if abs(real_part) > imag_part 
+     if abs(real_part) > imag_part % DK: asignar abs(real_part) a una variable arriba
        
        octant = 4;
        theta1 = x_pot_2 + y_mov_2_right + y_mov_5_right;  
@@ -193,7 +193,7 @@ function [theta, octant] = ac_atan2(real_part, imag_part)
      if abs(real_part) <= abs(imag_part) 
       
       octant = 6;
-      theta1 = y_pot_2 + y_mov_2_right + y_mov_5_right;  
+      theta1 = y_pot_2 + x_mov_2_right + x_mov_5_right;  
       theta1 = bitshift(theta1, -15);
       theta1 = real_mult_imag / (theta1);
       theta = round(pi_n_half - theta1);
@@ -210,7 +210,7 @@ function [theta, octant] = ac_atan2(real_part, imag_part)
      if real_part <= abs(imag_part)
        
        octant = 7;
-       theta1 = y_pot_2 + y_mov_2_right + y_mov_5_right;  
+       theta1 = y_pot_2 + x_mov_2_right + x_mov_5_right;  
        theta1 = bitshift(theta1, -15);
        theta1 = real_mult_imag / (theta1);
        theta = round(pi_n_half - theta1);
