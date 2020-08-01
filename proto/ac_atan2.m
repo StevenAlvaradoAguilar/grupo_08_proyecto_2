@@ -18,10 +18,7 @@
 %
 
 function [theta, octant] = ac_atan2(real_part, imag_part)
-
-  real_part = int32(real_part);
-  imag_part = int32(imag_part);
-
+  
   REAL_MULT_IMAG = real_part * imag_part;
   PI_ROUND = 102944;
   PI_N_ROUND = -PI_ROUND;
@@ -40,8 +37,15 @@ function [theta, octant] = ac_atan2(real_part, imag_part)
   X_MOV_5_RIGHT = bitshift(X_POT_2, -5);
   Y_MOV_2_RIGHT = bitshift(Y_POT_2,-2);
   Y_MOV_5_RIGHT = bitshift(Y_POT_2,-5);
+  
   SUM_X_Y = X_POT_2 + Y_MOV_2_RIGHT + Y_MOV_5_RIGHT;
+  MOV_X_15_RIGHT = bitshift(SUM_X_Y, -15);
+  THETA_X = round(REAL_MULT_IMAG / (MOV_X_15_RIGHT));
+  
   SUM_Y_X = Y_POT_2 + X_MOV_2_RIGHT + X_MOV_5_RIGHT;
+  MOV_Y_15_RIGHT = bitshift(SUM_Y_X, -15);
+  THETA_Y = round(REAL_MULT_IMAG / (MOV_Y_15_RIGHT));
+  
   
   %Indefined function
   if real_part == 0 && imag_part == 0
@@ -128,12 +132,10 @@ function [theta, octant] = ac_atan2(real_part, imag_part)
      
      %The octan 1
      if real_part > imag_part 
-      
-          octant = 1;
-          theta1 = bitshift(SUM_X_Y, -15);
-          theta1 = REAL_MULT_IMAG / (theta1);
-          theta = (theta1);
-          return;
+       
+       octant = 1;
+       theta = THETA_X;
+       return;
           
      endif
      
@@ -141,9 +143,7 @@ function [theta, octant] = ac_atan2(real_part, imag_part)
      if real_part <= imag_part
        
        octant = 2;
-       theta1 = bitshift(SUM_Y_X, -15);
-       theta1 = REAL_MULT_IMAG / (theta1);
-       theta = (PI_HALF - theta1);
+       theta = PI_HALF - THETA_Y;
        return;
         
      endif
@@ -157,20 +157,16 @@ function [theta, octant] = ac_atan2(real_part, imag_part)
      if ABSO_REAL_PART <= imag_part 
        
        octant = 3;
-       theta1 = bitshift(SUM_Y_X, -15);
-       theta1 = REAL_MULT_IMAG / (theta1);
-       theta = (PI_HALF - theta1);
-          return;
+       theta = PI_HALF - THETA_Y;
+       return;
           
      endif
      
      %The octan 4
      if ABSO_REAL_PART > imag_part 
        
-       octant = 4;  
-       theta1 = bitshift(SUM_X_Y, -15);
-       theta1 = REAL_MULT_IMAG / (theta1);
-       theta = (PI_ROUND + theta1);
+       octant = 4;
+       theta = PI_ROUND + THETA_X;
        return;
         
      endif
@@ -182,23 +178,19 @@ function [theta, octant] = ac_atan2(real_part, imag_part)
      
      %The octan 5
      if ABSO_REAL_PART > ABSO_IMAG_PART
-      
-      octant = 5;
-      theta1 = bitshift(SUM_X_Y, -15);
-      theta1 = REAL_MULT_IMAG / (theta1);
-      theta = (PI_N_ROUND + theta1);
-      return;
+       
+       octant = 5;
+       theta = PI_N_ROUND + THETA_X;
+       return;
         
      endif
      
      %The octan 6
-     if ABSO_REAL_PART <= ABSO_IMAG_PART 
-      
-      octant = 6;
-      theta1 = bitshift(SUM_Y_X, -15);
-      theta1 = REAL_MULT_IMAG / (theta1);
-      theta = (PI_N_HALF - theta1);
-      return;   
+     if ABSO_REAL_PART <= ABSO_IMAG_PART
+       
+       octant = 6;
+       theta = PI_N_HALF - THETA_Y;
+       return;   
           
      endif
     
@@ -211,9 +203,7 @@ function [theta, octant] = ac_atan2(real_part, imag_part)
      if real_part <= ABSO_IMAG_PART
        
        octant = 7;
-       theta1 = bitshift(SUM_Y_X, -15);
-       theta1 = REAL_MULT_IMAG / (theta1);
-       theta = (PI_N_HALF - theta1);
+       theta = PI_N_HALF - THETA_Y;
        return;
         
      endif
@@ -222,9 +212,7 @@ function [theta, octant] = ac_atan2(real_part, imag_part)
      if real_part > ABSO_IMAG_PART 
        
        octant = 8;
-       theta1 = bitshift(SUM_X_Y, -15);
-       theta1 = REAL_MULT_IMAG / (theta1);
-       theta = (theta1);
+       theta = THETA_X;
        return;
           
      endif
