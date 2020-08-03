@@ -9,6 +9,7 @@ ExitProcess PROTO, dwExitCode:DWORD
 
 .data
 ; declarar variables aqui
+ 
 
 .code
 
