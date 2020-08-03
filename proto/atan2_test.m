@@ -44,10 +44,10 @@ fclose(fid);
 
 % EVALUACIÓN
 %
-% Implementación de Solución    4.5/5 de 60%
+% Implementación de Solución    5/5 de 60%
 %
 % Resultados Correctos          5/5 de 30%
 %
 % Orden y Estilo de Código      5/5 de 10%
 %
-% Nota en Prototipado:                 94
+% Nota en Prototipado:                 100
