@@ -21,9 +21,13 @@
   <ItemGroup>
     <MASM Include="ac_atan2.asm" />
     <MASM Include="main.asm" />
+    <MASM Include="﻿io_functions.asm" />
   </ItemGroup>
   <ItemGroup>
     <None Include="ac_atan2.inc" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="﻿io_functions.inc" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <VCProjectVersion>16.0</VCProjectVersion>

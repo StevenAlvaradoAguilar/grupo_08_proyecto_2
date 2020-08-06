@@ -21,10 +21,18 @@
     <MASM Include="ac_atan2.asm">
       <Filter>Archivos de origen</Filter>
     </MASM>
+    <MASM Include="﻿io_functions.asm">
+      <Filter>Archivos de origen</Filter>
+    </MASM>
   </ItemGroup>
   <ItemGroup>
     <None Include="ac_atan2.inc">
       <Filter>Archivos de origen</Filter>
     </None>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="﻿io_functions.inc">
+      <Filter>Archivos de origen</Filter>
+    </ClCompile>
   </ItemGroup>
 </Project>
