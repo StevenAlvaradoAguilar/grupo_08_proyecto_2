@@ -29,10 +29,8 @@
     <None Include="ac_atan2.inc">
       <Filter>Archivos de origen</Filter>
     </None>
-  </ItemGroup>
-  <ItemGroup>
-    <ClCompile Include="﻿io_functions.inc">
+    <None Include="io_functions.inc">
       <Filter>Archivos de origen</Filter>
-    </ClCompile>
+    </None>
   </ItemGroup>
 </Project>
