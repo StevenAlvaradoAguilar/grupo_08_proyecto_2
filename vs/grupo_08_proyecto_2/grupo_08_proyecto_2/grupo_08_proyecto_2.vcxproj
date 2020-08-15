@@ -20,14 +20,15 @@
   </ItemGroup>
   <ItemGroup>
     <MASM Include="ac_atan2.asm" />
+    <MASM Include="io_functions.asm" />
     <MASM Include="main.asm" />
-    <MASM Include="﻿io_functions.asm" />
   </ItemGroup>
   <ItemGroup>
     <None Include="ac_atan2.inc" />
-    <None Include="io_functions.inc">
-      <FileType>Document</FileType>
-    </None>
+    <None Include="io_functions.inc" />
+  </ItemGroup>
+  <ItemGroup>
+    <Text Include="input_data.txt" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <VCProjectVersion>16.0</VCProjectVersion>
@@ -107,7 +108,7 @@
       <SubSystem>Console</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <AdditionalLibraryDirectories>C:\Irvine;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
-      <AdditionalDependencies>user32.lib:irvine32.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>User32.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
     <MASM>
       <IncludePaths>C:\Irvine;%(IncludePaths)</IncludePaths>
@@ -126,7 +127,7 @@
       <SubSystem>Console</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <AdditionalLibraryDirectories>C:\Irvine;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
-      <AdditionalDependencies>user32.lib:irvine32.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>User32.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
     <MASM>
       <IncludePaths>C:\Irvine;%(IncludePaths)</IncludePaths>

@@ -21,7 +21,7 @@
     <MASM Include="ac_atan2.asm">
       <Filter>Archivos de origen</Filter>
     </MASM>
-    <MASM Include="﻿io_functions.asm">
+    <MASM Include="io_functions.asm">
       <Filter>Archivos de origen</Filter>
     </MASM>
   </ItemGroup>
@@ -32,5 +32,10 @@
     <None Include="io_functions.inc">
       <Filter>Archivos de origen</Filter>
     </None>
+  </ItemGroup>
+  <ItemGroup>
+    <Text Include="input_data.txt">
+      <Filter>Archivos de origen</Filter>
+    </Text>
   </ItemGroup>
 </Project>

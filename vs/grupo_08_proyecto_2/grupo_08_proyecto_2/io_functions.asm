@@ -12,215 +12,159 @@ include    c:\Irvine\Irvine32.inc
 includelib c:\Irvine\Irvine32.lib
 includelib c:\Irvine\Kernel32.lib
 includelib c:\Irvine\user32.lib
-include    io_functions.inc           ;We include an .inc file that declares a prototype of the function
+include    c:\Irvine\Macros.inc
+
+include    io_functions.inc                 ;We include an .inc file that declares a prototype of the function
+
+buffer_size = 5000
+buffer_Msg  = 37
 
 .data
 ; declarar variables aqui
-filename       db 'input_data.txt',0	
-filenameresult db 'output_data.txt',0	 
-NLine          db 13, 10, '$'
-handle         dw 0                  ; will be the file handle. the number that DOS assigns to the open file.
-buffer         db 255 DUP (' ')      ; make a plain buffer (not a strange input one like before).  
-;result_text db 250 dup('$')      
-;result db "output.txt", 0   
-handler        dw ?    
-handler2       dw ?  
-len            dw 0 
-len2           db 255                ; we need an input buffer this time.
-
-act            db 0
+buffer               BYTE   buffer_size DUP(?)
+Pointer              BYTE   SIZEOF buffer DUP(0)
+fileName             BYTE   "input_data.txt", 0
+fileHandler          HANDLE ?
+Msg                  BYTE   "Octant = ", 0
+Msg1                 BYTE   "X = ", 0
+Msg2                 BYTE   "Y = ", 0
+Msg3                 BYTE   "Angle: ", 0
+Msg4                 BYTE   "theta = ", 13,10,0
+fileName2            BYTE   "output_data.txt", 0
+String_real_part     BYTE    "0", 0 
+String_imag_part     BYTE    "0", 0
+real_part            WORD    0 
+imag_part            WORD    0
+Octant               BYTE    0
+Theta                WORD    0
 
 .code
  ; Escribir codigo aqui 
 
 io_functions PROC 
-MOV AX, @DATA 
-MOV DS, AX 
 
-	MOV AH, 3Dh                    ; 3Dh of DOS Services opens a file.
-	MOV AL, 0                      ; 0 - for reading. 1 - for writing. 2 - both
-	MOV DX, OFFSET filename        ; make a pointer to the filename
-	INT 21h                        ; call DOS
-	MOV handle,ax                  ; Function 3Dh returns the file handle in AX, here we save it for later use.
+    MOV eax, DWORD PTR 0
+	MOV ecx, DWORD PTR 0
+	MOV ecx, DWORD PTR 0
+	MOV edx, DWORD PTR 0
+    
+    ; Abre el archivo en modo de entrada.
+    read_values PROC
+         mov edx, OFFSET fileName
+         call OpenInputFile
+         mov fileHandler, eax
 
-	;'DOS Service Function number 3Fh reads from a file.
+        ; Lee el archivo y lo coloca en un búfer.
+         mov edx, OFFSET buffer                       ;NO BORRRAR
+         mov ecx, buffer_size                         ;NO BORRRAR
+         call ReadFromFile                            ;NO BORRRAR
+         ;We move through read file to get one by one each operator
+         mov  esi, OFFSET buffer
+         mov  edi, OFFSET Pointer
+         mov  ecx, SIZEOF buffer
+         L1:
+            mov  al, [esi]                                ; get a character from buffer
+            mov  [edi], al                                 ; store it in the Pointer
+            mov al, [edi]
+            CMP AL, ";"
+            JE L2
+            mov String_real_part, AL
+            mov edx, OFFSET String_real_part
+            call WriteString
+            inc  esi                                      ; move to next character
+            inc  edi
+            loop L1
+            ret
 
-	MOV AH, 3Fh
-	MOV CX, 27                    ; I will assume imput_data.txt has atleast 4 bytes in it. CX is how many bytes to read.
-	MOV DX, OFFSET buffer         ; DOS Functions like DX having pointers for some reason.
-	MOV BX, handle                ; BX needs the file handle.
-	INT 21h                       ; call DOS
+         L2:
+            inc  esi                                      ; move to next character
+            inc  edi
+            mov  al, [esi]                                ; get a character from buffer
+            mov  [edi], al                                 ; store it in the Pointer
+            mov al, [edi]
+            CMP AL, 13
+            JE L3
+            mov String_imag_part, AL
+            mov edx, OFFSET String_imag_part
+            call WriteString
+            loop L2
+            ret
 
-	;Here we will put a $ after 4 bytes in the buffer and print the data read:
-
-	MOV DX, OFFSET buffer
-	ADD DX, AX                   ; Function 3Fh returns the actual amount of bytes read in AX (should be 4 if
-	
-	; nothing went wrong.
-	MOV BX, DX
-	MOV byte [bx], '$'			 ; byte pointer so we don't mess with the whole word (a word is 16bits).
+         L3:
+            inc  esi                                      ; move to next character
+            inc  edi
+            mov  al, [esi]                                ; get a character from buffer
+            mov  [edi], al                                 ; store it in the Pointer
+            mov al, [edi]
+            CMP AL, 10
+            loop L4
+            ret
+        L4:
             
-    MOV CL, 20
-    MOV BL, 1   
+            
+            loop L1
+            ret
 
-    MOV DX, OFFSET buffer		 ; put the pointer back in DX.
-	MOV AH, 9
+     read_values endp
+    
+    write_values PROC
+         ; Crea un nuevo archivo de texto.
+         mov edx, OFFSET fileName2
+         call CreateOutputFile
+         mov fileHandler, eax
 
-	INT 21h						 ; call DOS Function 9 (Print String).  
-    MOV DX, OFFSET NLine		 ; put the pointer back in DX.
+         ;Escribe el búfer en el archivo de salida.
 
-	MOV AH, 9
-	INT 21h					     ; call DOS Function 9 (Print String).
-	
-		call to_lower
+         ;  Escribe el mensaje de Octante en el archivo  
+         MOV EDX, OFFSET Msg
+         mov ecx, buffer_Msg  
+         CALL WriteToFile
+         
+         ;  Escribe el mensaje del X en el archivo  
+         MOV EDX, OFFSET Msg1
+         mov ecx, buffer_Msg  
+         CALL WriteToFile
 
-	return:  
-	; call Print 
-		LEA SI, buffer 
-   
-		mov DX, OFFSET buffer    ; put the pointer back in DX.
-		mov AH, 9
-		int 21h                  ; call DOS Function 9 (Print String).  
+         ;  Escribe el mensaje del Y en el archivo  
+         MOV EDX, OFFSET Msg2
+         mov ecx, buffer_Msg  
+         CALL WriteToFile
 
-		mov DX, OFFSET NLine     ; put the pointer back in DX.
-		mov AH, 9
-		int 21h                  ; call DOS Function 9 (Print String).   
-		
-;---------------------------------------------------------------------------------------------------------
+         ;  Escribe el mensaje del Angle en el archivo  
+         MOV EDX, OFFSET Msg3
+         mov ecx, buffer_Msg  
+         CALL WriteToFile
 
-	label:  
-         MOV AL,[SI] 
+         ;  Escribe el mensaje del Angle en el archivo  
+         MOV EDX, OFFSET Msg4
+         mov ecx, buffer_Msg  
+         CALL WriteToFile
 
-         ;mov dl,al
-         ;mov ah,2h
-         ; int 21h
-         CALL moving1      
-         CMP AL,'a'
-         jge changeLetter
-         ;cmp al,'A'
-         ; jge changeLetter1step
-         inc SI 
-         dec CL
-           
+         mov eax, fileHandler                 ;NO BORRAR
+         mov edx, OFFSET buffer               ;NO BORRAR
+         mov ecx, buffer_size                 ;NO BORRAR
+         call WriteToFile                     ;NO BORRAR
 
-         ; mov bl,0 
-         jnz label      
+    write_values endp
 
-;---------------------------------------------------------------------------------------------------------   
+    cerrar_archivo:
+        mov eax, fileHandler
+        call CloseFile
 
-         jz Print
 
-;---------------------------------------------------------------------------------------------------------
-	
-	changeLetter: 
-           
-         cmp bl,1
-         je changefirst  
-         inc si 
-             
-         dec cl 
-          
-         jnz label
-	     ;;;;;;;;;;;;;;;;  
-         jz Print                     ; dont go down     
-		         
-		 jnz label    
-		 changefirst:
-		 ;inc si  
-		 
-		 mov al,[si]
-		 sub al,32d  
-		 mov [si],al
-		 mov bl,0
-
-		 inc si 
-         ; dec cl
-		 jnz label       
-		 ;ret      
-;---------------------------------------------------------------------------------------------------------
-	
-	moving1: 
-	
-		cmp al,' '
-		je increment
-		cmp al,'Z'
-		jle decrement
-		ret
-
-	increment:
-		mov bl,1
-		ret 
-
-	decrement:
-		mov bl,0
-		 ret
-		  
-	to_lower:
-		lea si,buffer
-
-	lower:
-		mov al,[si]
-		cmp al,60h
-		jg inc_di_lo
-		cmp al,40h
-		jl inc_di_lo
-		add al,20h
-		mov [si],al
-		inc si
-		jmp lower
-		inc_di_lo:
-		inc si
-		cmp al,'$'
-		je return
-		jmp lower    
-  
-	 Print:
-		
-		mov dx,offset buffer         ; put the pointer back in DX.
-		mov ah,9
-		int 21h                      ; call DOS Function 9 (Print String).   
-		
-			
-;---------------------------------------------------------------------------------------------------------
-
-        mov dx,offset filenameresult ; put offset of filename in dx 
-		mov cx,0                     ; clear cx - make ordinary file 
-		mov ah,3Ch                   ; function 3Ch - create a file 
-		int 21h                      ; call DOS service 
-		;mov dx,offset               ; put offset of filename in dx 
-		mov ah,3Dh					 ; 3Dh of DOS Services opens a file.
-		mov al,1					 ; 0 - for reading. 1 - for writing. 2 - both
-		mov dx,offset filenameresult ; make a pointer to the filename
-		int 21h						 ; call DOS
-		mov handle,ax                ; Function 3Dh returns the file handle in AX, here we save it for later use.
-
-	;Get input:
-
-	;	mov ah,0Ah
-		;mov dx,offset buffer
-		;int 21h
-
-;	DOS Service Function number 40h writes to a file.
-
-		mov ah,40h
-		mov bx,255                    ; pointer to number of bytes read from user.
-		mov cl,27                     ; get the contents of the byte at the pointer.
-		; note that even though CX takes the length, CL physically IS the low byte of CX.
-		mov dx,offset buffer         ; pointer to the actual data in DX.
-		mov bx,handle                ; BX needs the file handle.
-		int 21h                      ; call DOS
-
-;---------------------------------------------------------------------------------------------------------
-
-		mov ah,4Ch
-		int 21h                      ; Function 4Ch (Exit Program)      
-   
-		end
-
- INVOKE ExitProcess, 0
+    exit
 
 io_functions ENDP
 
 ; (insertar procesos adicionales aqui)
+;Clrscr           PROTO                   ; clear the screen
+OpenInputFile    PROTO                    ; open file in input mode
+ReadFromFile     PROTO                    ; read buffer from input file
+WriteToFile      PROTO                    ; write the buffer in the file
+CreateOutputFile PROTO                    ; create file for writing
+WriteInt         PROTO
+WriteString      PROTO
+;Crlf             PROTO
+CloseFile        PROTO                    ; close a file handle
 
-END 
+END

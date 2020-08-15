@@ -49,6 +49,11 @@ theta_y           WORD 0
  ; Escribir codigo aqui 
  ac_atan2 PROC real_part:WORD, imag_part:WORD, Octant:BYTE, Theta:DWORD
 
+	MOV eax, DWORD PTR 0
+	MOV ecx, DWORD PTR 0
+	MOV ecx, DWORD PTR 0
+	MOV edx, DWORD PTR 0
+
 	;Constant PI_ROUND
 	MOV EAX, 102944
 	MOV PI_ROUND, EAX
@@ -110,124 +115,6 @@ theta_y           WORD 0
 	mov EAX, THREE_PI_QUARTS
 	NEG EAX
 	MOV THREE_N_PI_QUARTS, EAX
-
-	XOR EAX, EAX
-	XOR EBX, EBX
-
-	;Function absolute real_part
-	; abs(eax), with no branches.
-	MOV AX, real_part
-	cdq
-	xor AX, DX
-	sub AX, DX
-	MOV abso_real_part, AX
-
-	XOR EAX, EAX
-	XOR EBX, EBX
-
-	;Function absolute imag_part
-	; abs(eax), with no branches.
-	MOV AX, imag_part
-	cdq
-	xor AX, DX
-	sub AX, DX
-	MOV abso_imag_part, AX
-
-	XOR EAX, EAX
-	XOR EBX, EBX
-
-	;Function real_part mult real_part
-	MOV AX, real_part
-	MOV BX, real_part
-	MUL BX
-	MOV x_pot_2, BX
-
-	XOR EAX, EAX
-	XOR EBX, EBX
-
-	;Function real_part mult real_part
-	MOV AX, imag_part
-	MOV BX, imag_part
-	MUL BX
-	MOV y_pot_2, BX
-
-	XOR EAX, EAX
-	XOR EBX, EBX
-
-	;Function real_part mov 2 right
-	MOV CX, x_pot_2
-	SHR CX, 2
-	MOV x_mov_2_right, CX
-
-	XOR ECX, ECX
-
-	;Function real_part mov 5 right
-	MOV CX, x_pot_2
-	SHR CX, 5
-	MOV x_mov_5_right, CX
-
-	XOR ECX, ECX
-
-	;Function imag_part mov 2 right
-	MOV CX, y_pot_2
-	SHR CX, 2
-	MOV y_mov_2_right, CX
-
-	;Function imag_part mov 5 right
-	MOV CX, y_pot_2
-	SHR CX, 5
-	MOV y_mov_5_right, CX
-
-	XOR CX, CX
-
-	;Function sum x_pot_2 + y_mov_2_right + y_mov_5_right
-	MOV AX, x_pot_2
-	MOV BX, y_mov_2_right
-	ADD AX, BX
-	XOR BX, BX
-	MOV BX, y_mov_5_right
-	ADD AX, BX
-	MOV sum_x_y, AX
-
-
-	;Function sum_x_y mov 15 right
-	MOV CX, sum_x_y
-	SHR CX, 15
-	MOV mov_x_15_right, CX
-
-	XOR ECX, ECX
-
-	;Function real_mult_imag div mov_x_rigth
-	MOV AX, REAL_MULT_IMAG
-	MOV BX, mov_x_15_right
-	DIV BX
-	MOV theta_x, BX
-
-	XOR EAX, EAX
-	XOR EBX, EBX
-
-	;Function sum y_pot_2 + x_mov_2_right + x_mov_5_right
-	MOV AX, y_pot_2
-	MOV BX, x_mov_2_right
-	ADD AX, BX
-	XOR EBX, EBX
-	MOV BX, x_mov_5_right
-	ADD AX, BX
-	MOV sum_y_x, AX
-
-
-	;Function sum_x_y mov 15 right
-	MOV CX, sum_y_x
-	SHR CX, 15
-	MOV mov_y_15_right, CX
-
-	XOR ECX, ECX
-
-	;Function real_mult_imag div mov_x_rigth
-	MOV AX, REAL_MULT_IMAG
-	MOV BX, mov_y_15_right
-	DIV BX
-	MOV theta_y, BX
 
 	XOR EAX, EAX
 	XOR EBX, EBX
@@ -495,6 +382,139 @@ theta_y           WORD 0
 		MOV Octant, AL
 		MOV BX, PI_N_QUARTS
 		MOV Theta, EBX
+
+;--------------------------------------------------------------------------------------------
+
+	;Function absolute real_part   
+	; abs(eax), with no branches.
+	MOV AX, real_part
+	CMP AX, 0
+	JB Conver_Abso_real_part
+	MOV abso_real_part, AX
+
+	Conver_Abso_real_part:
+		MOV AX, real_part
+		MOV BX, 1
+		NEG BX
+		MUL BX
+		MOV abso_real_part, AX
+
+	XOR EAX, EAX
+	XOR EBX, EBX
+
+	;Function absolute imag_part  
+	; abs(eax), with no branches.
+	MOV AX, imag_part
+	JB Conver_Abso_imag_part
+	MOV abso_imag_part, AX
+
+	Conver_Abso_imag_part:
+		MOV AX, real_part
+		MOV BX, 1
+		NEG BX
+		MUL BX
+		MOV abso_imag_part, AX
+
+	XOR EAX, EAX
+	XOR EBX, EBX
+
+	;Function real_part mult real_part
+	MOV AX, real_part
+	MOV BX, real_part
+	MUL BX
+	MOV x_pot_2, BX
+
+	XOR EAX, EAX
+	XOR EBX, EBX
+
+	;Function real_part mult real_part
+	MOV AX, imag_part
+	MOV BX, imag_part
+	MUL BX
+	MOV y_pot_2, BX
+
+	XOR EAX, EAX
+	XOR EBX, EBX
+
+	;Function real_part mov 2 right
+	MOV CX, x_pot_2
+	SHR CX, 2
+	MOV x_mov_2_right, CX
+
+	XOR ECX, ECX
+
+	;Function real_part mov 5 right
+	MOV CX, x_pot_2
+	SHR CX, 5
+	MOV x_mov_5_right, CX
+
+	XOR ECX, ECX
+
+	;Function imag_part mov 2 right
+	MOV CX, y_pot_2
+	SHR CX, 2
+	MOV y_mov_2_right, CX
+
+	;Function imag_part mov 5 right
+	MOV CX, y_pot_2
+	SHR CX, 5
+	MOV y_mov_5_right, CX
+
+	XOR CX, CX
+
+	;Function sum x_pot_2 + y_mov_2_right + y_mov_5_right
+	MOV AX, x_pot_2
+	MOV BX, y_mov_2_right
+	ADD AX, BX
+	XOR BX, BX
+	MOV BX, y_mov_5_right
+	ADD AX, BX
+	MOV sum_x_y, AX
+
+
+	;Function sum_x_y mov 15 right
+	MOV CX, sum_x_y
+	SHR CX, 15
+	MOV mov_x_15_right, CX
+
+	XOR ECX, ECX
+
+	;Function real_mult_imag div mov_x_rigth
+	MOV AX, REAL_MULT_IMAG
+	MOV BX, mov_x_15_right
+	DIV AX
+	MOV theta_x, BX
+
+	XOR EAX, EAX
+	XOR EBX, EBX
+
+	;Function sum y_pot_2 + x_mov_2_right + x_mov_5_right
+	MOV AX, y_pot_2
+	MOV BX, x_mov_2_right
+	ADD AX, BX
+	XOR EBX, EBX
+	MOV BX, x_mov_5_right
+	ADD AX, BX
+	MOV sum_y_x, AX
+
+
+	;Function sum_x_y mov 15 right
+	MOV CX, sum_y_x
+	SHR CX, 15
+	MOV mov_y_15_right, CX
+
+	XOR ECX, ECX
+
+	;Function real_mult_imag div mov_x_rigth
+	MOV AX, REAL_MULT_IMAG
+	MOV BX, mov_y_15_right
+	DIV AX
+	MOV theta_y, BX
+
+	XOR EAX, EAX
+	XOR EBX, EBX
+
+;-----------------------------------------------------------------------------------------------------------
 	
 	;
 	Octant_1:
@@ -528,8 +548,8 @@ theta_y           WORD 0
 		MOV AX, real_part
 		MOV BX, imag_part
 		CMP AX, BX
-		JB Octant_3
 		JBE Result_Octant_2
+		JB Octant_3
 		JNB Octant_3
 		JNBE Octant_3
 
@@ -543,7 +563,7 @@ theta_y           WORD 0
 		MOV DX, theta_y
 		SUB BX, DX
 		MOV Theta, EBX
-		RET
+ 		RET
 
 	;
 	Octant_3:
@@ -553,8 +573,8 @@ theta_y           WORD 0
 		MOV AX, abso_real_part
 		MOV BX, imag_part
 		CMP AX, BX
-		JB Octant_4
 		JBE Result_Octant_3
+		JB Octant_4
 		JNB Octant_4
 		JNBE Octant_4 
 
@@ -604,7 +624,7 @@ theta_y           WORD 0
 		MOV BX, abso_imag_part
 		CMP AX, BX
 		JA Result_Octant_5 
-		JNA  Octant_6
+		JNA Octant_6
 		JAE Octant_6
 		JNAE Octant_6
 
