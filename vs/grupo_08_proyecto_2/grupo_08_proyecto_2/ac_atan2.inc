@@ -1,1 +1,1 @@
-ac_atan2 PROTO, real_part:WORD, imag_part:WORD, Octant:BYTE,Theta:DWORD
+ac_atan2 PROTO, real_part:SWORD, imag_part:SWORD

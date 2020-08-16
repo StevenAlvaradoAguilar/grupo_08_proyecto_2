@@ -17,32 +17,26 @@ include    c:\Irvine\Macros.inc
 include    io_functions.inc                 ;We include an .inc file that declares a prototype of the function
 
 buffer_size = 5000
-buffer_Msg  = 37
 
 .data
 ; declarar variables aqui
-buffer               BYTE   buffer_size DUP(?)
-Pointer              BYTE   SIZEOF buffer DUP(0)
+buffer               WORD   buffer_size DUP(?)
 fileName             BYTE   "input_data.txt", 0
 fileHandler          HANDLE ?
-Msg                  BYTE   "Octant = ", 0
-Msg1                 BYTE   "X = ", 0
-Msg2                 BYTE   "Y = ", 0
-Msg3                 BYTE   "Angle: ", 0
-Msg4                 BYTE   "theta = ", 13,10,0
 fileName2            BYTE   "output_data.txt", 0
-String_real_part     BYTE    "0", 0 
-String_imag_part     BYTE    "0", 0
-real_part            WORD    0 
-imag_part            WORD    0
-Octant               BYTE    0
-Theta                WORD    0
+real_part            DD      0 
+imag_part            DD      0
+angle                SWORD   0
+tamanno_Number       BYTE    0
+tamanno_Number1      BYTE    0
+
 
 .code
  ; Escribir codigo aqui 
 
 io_functions PROC 
-
+    
+    ;Hace que los registros inicien con 0
     MOV eax, DWORD PTR 0
 	MOV ecx, DWORD PTR 0
 	MOV ecx, DWORD PTR 0
@@ -54,91 +48,229 @@ io_functions PROC
          call OpenInputFile
          mov fileHandler, eax
 
-        ; Lee el archivo y lo coloca en un búfer.
-         mov edx, OFFSET buffer                       ;NO BORRRAR
-         mov ecx, buffer_size                         ;NO BORRRAR
-         call ReadFromFile                            ;NO BORRRAR
+        ; Lee el archivo y lo coloca en un búfer. 
+         mov edx, OFFSET buffer                           ;NO BORRRAR
+         mov ecx, buffer_size                             ;NO BORRRAR
+         call ReadFromFile                                ;NO BORRRAR
+
          ;We move through read file to get one by one each operator
          mov  esi, OFFSET buffer
-         mov  edi, OFFSET Pointer
-         mov  ecx, SIZEOF buffer
-         L1:
-            mov  al, [esi]                                ; get a character from buffer
-            mov  [edi], al                                 ; store it in the Pointer
-            mov al, [edi]
-            CMP AL, ";"
-            JE L2
-            mov String_real_part, AL
-            mov edx, OFFSET String_real_part
-            call WriteString
-            inc  esi                                      ; move to next character
-            inc  edi
-            loop L1
-            ret
 
-         L2:
-            inc  esi                                      ; move to next character
-            inc  edi
-            mov  al, [esi]                                ; get a character from buffer
-            mov  [edi], al                                 ; store it in the Pointer
-            mov al, [edi]
-            CMP AL, 13
-            JE L3
-            mov String_imag_part, AL
-            mov edx, OFFSET String_imag_part
-            call WriteString
-            loop L2
-            ret
+         Tam_Num:
+             mov al, [esi]
+             CMP AL, ";"
+             je Mov_ESI_Number
+             INC ESI
+             cmp al, '-'
+             JE Tam_Num
+             MOV BL, tamanno_Number
+             INC BL
+             MOV tamanno_Number, BL
+             jmp Tam_Num
+        
+        ;Reset esi because start the first data
+        Mov_ESI_Number:
+            mov  esi, OFFSET buffer
+            JMP L1
+
+        L1:
+            mov al, [esi]                                 ; get a character from buffer
+            cmp byte ptr [esi], '-'                       ;Compare the first bit o character with - negative
+            je negative                                ;if X ='s a - then jump to negative.
+            mov ch, 0                                ;ch=0, a flag for positive
+            jmp convert                                ;if positive then jump to convert.
+
+            negative:
+                mov ch, 1                            ;ch =1, a flag for negative
+                inc esi                             ;esi -> the first digit char
+
+            convert:
+                mov al, [esi]                           ;al = first digit char
+                CMP AL, ";"
+                je L2
+                ;This part the convert ascii to int
+                sub al, 48                            ; subtracts al by 48 first digit
+                movzx eax, al                           ;al=>eax, unsigned
+                mov ebx, 10    ;ebx=>10, the multiplier
+                JMP Form_Number
+                INC ESI
+                jmp L1
+
+             Form_Number:
+                   Mov cl, tamanno_Number
+                   Cmp cl, 4
+                   Je X_1000
+
+                   Cmp cl, 3
+                   Je X_100
+
+                   Cmp cl, 2
+                   Je X_10
+
+                   Cmp cl, 1
+                   Je X_1
+
+            X_1000:
+                  mov ebx, 1000
+                  mul ebx
+                  add real_part, eax
+                  dec cl 
+                  mov tamanno_Number, cl
+                  inc ESI
+                  jmp L1
+
+            X_100:
+                  mov ebx, 100
+                  mul ebx
+                  add real_part, eax
+                  dec cl 
+                  mov tamanno_Number, cl
+                  inc ESI
+                  jmp L1
+
+             X_10:
+                  mov ebx, 10
+                  mul ebx
+                  add real_part, eax
+                  dec cl 
+                  mov tamanno_Number, cl
+                  inc ESI
+                  jmp L1
+
+             X_1:
+              mov ebx, 1
+              mul ebx
+              add real_part, eax
+              dec cl 
+              mov tamanno_Number, cl
+              INC ESI
+              INC ESI
+              jmp Tam_Num2
+
+
+            Tam_Num2:
+                 mov al, [esi]
+                 CMP AL, 13
+                 je Mov_ESI_Number2
+                 INC ESI
+                 cmp al, '-'
+                 JE Tam_Num2
+                 MOV BL, tamanno_Number1
+                 INC BL
+                 MOV tamanno_Number1, BL
+                 jmp Tam_Num2
+
+            Mov_ESI_Number2:
+                mov  esi, OFFSET buffer
+                JMP Verification_ESI_Imag
+
+            Verification_ESI_Imag:
+                mov al, [esi]
+                CMP AL, ";"
+                JE L2
+                INC ESI
+                JMP Verification_ESI_Imag
+
+          L2:
+            INC ESI
+            mov al, [esi]                                 ; get a character from buffer
+            cmp byte ptr [esi], '-'                       ;Compare the first bit o character with - negative
+            je negative2                                ;if X ='s a - then jump to negative.
+            mov ch, 0                                ;ch=0, a flag for positive
+            jmp convert2                                ;if positive then jump to convert.
+
+            negative2:
+                mov ch, 1                            ;ch =1, a flag for negative
+                inc esi                             ;esi -> the first digit char
+
+            convert2:
+                mov al, [esi]                           ;al = first digit char
+                CMP AL, ";"
+                je L3
+                ;This part the convert ascii to int
+                sub al, 48                            ; subtracts al by 48 first digit
+                movzx eax, al                           ;al=>eax, unsigned
+                mov ebx, 10    ;ebx=>10, the multiplier
+                JMP Form_Number1
+                INC ESI
+                jmp L2
+
+             Form_Number1:
+                   Mov cl, tamanno_Number1
+                   Cmp cl, 4
+                   Je Y_1000
+
+                   Cmp cl, 3
+                   Je Y_100
+
+                   Cmp cl, 2
+                   Je Y_10
+
+                   Cmp cl, 1
+                   Je Y_1
+
+            Y_1000:
+                  mov ebx, 1000
+                  mul ebx
+                  add imag_part, eax
+                  dec cl 
+                  mov tamanno_Number1, cl
+                  jmp L2
+
+            Y_100:
+                  mov ebx, 100
+                  mul ebx
+                  add imag_part, eax
+                  dec cl 
+                  mov tamanno_Number1, cl
+                  jmp L2
+
+             Y_10:
+                  mov ebx, 10
+                  mul ebx
+                  add imag_part, eax
+                  dec cl 
+                  mov tamanno_Number1, cl
+                  jmp L2
+
+             Y_1:
+              mov ebx, 1
+              mul ebx
+              add imag_part, eax
+              dec cl 
+              mov tamanno_Number1, cl
+              jmp L3
 
          L3:
             inc  esi                                      ; move to next character
-            inc  edi
             mov  al, [esi]                                ; get a character from buffer
-            mov  [edi], al                                 ; store it in the Pointer
-            mov al, [edi]
-            CMP AL, 10
-            loop L4
-            ret
-        L4:
-            
-            
-            loop L1
-            ret
+            CMP AL, 10                                    ;Compare AL with \n
+            ;Mandar los números al atan2
+            MOV EAX, real_part
+            MOV EBX, imag_part
+            RET
+            INC ESI
+            JMP L1
+
 
      read_values endp
     
     write_values PROC
+
          ; Crea un nuevo archivo de texto.
+         MOV BX, AX
+         CALL WriteInt
          mov edx, OFFSET fileName2
          call CreateOutputFile
          mov fileHandler, eax
 
          ;Escribe el búfer en el archivo de salida.
 
-         ;  Escribe el mensaje de Octante en el archivo  
-         MOV EDX, OFFSET Msg
-         mov ecx, buffer_Msg  
-         CALL WriteToFile
-         
-         ;  Escribe el mensaje del X en el archivo  
-         MOV EDX, OFFSET Msg1
-         mov ecx, buffer_Msg  
-         CALL WriteToFile
-
-         ;  Escribe el mensaje del Y en el archivo  
-         MOV EDX, OFFSET Msg2
-         mov ecx, buffer_Msg  
-         CALL WriteToFile
-
-         ;  Escribe el mensaje del Angle en el archivo  
-         MOV EDX, OFFSET Msg3
-         mov ecx, buffer_Msg  
-         CALL WriteToFile
-
-         ;  Escribe el mensaje del Angle en el archivo  
-         MOV EDX, OFFSET Msg4
-         mov ecx, buffer_Msg  
-         CALL WriteToFile
+         Conver_Int_to_String:
+            mov  bl, [esi]
+            CMP AL, 13 
+            LOOP Conver_Int_to_String
+        
 
          mov eax, fileHandler                 ;NO BORRAR
          mov edx, OFFSET buffer               ;NO BORRAR
