@@ -1,6 +1,6 @@
-; Descripcion del Programa:
-; Autor:
-; Dia:
+; Descripcion del Programa: Function atan2
+; Autor: Steven Alvarado Aguilar, Andres Lopéz Sánchez, Fabian Lopéz Sánchez
+; Dia: 16/ 08/ 2020
 
 .386
 .model flat,stdcall
@@ -16,10 +16,13 @@ includelib c:\Irvine\user32.lib
 include    io_functions.inc          ;We include an .inc file that declares a prototype of the function
 include    ac_atan2.inc              ;We include an .inc file that declares a prototype of the function
 
+buffer_size = 5000
+
 .data
 ; declarar variables aqui
-real_part SWORD 0
-imag_part SWORD 0
+buffer_output    WORD  buffer_size DUP(?)
+real_part       SDWORD ?
+imag_part       SDWORD ?
 
 .code
 
@@ -33,11 +36,16 @@ main PROC
 	;Calls the class RequestIntegers and gives it the data
 	INVOKE read_values
 
-	MOV real_part, AX	;The value in x
-	MOV	imag_part, BX  ;The value in y
+	MOV real_part, EAX	            ;The value in x
+	MOV	imag_part, EBX               ;The value in y
 
 	;Calls the class uint8_mult and gives it the data,
 	INVOKE ac_atan2, real_part, imag_part
+
+	;Agregar cada resultado a un array de strings
+	OutBuffer:
+
+		MOV buffer_output, AX
 
 	INVOKE write_values
 

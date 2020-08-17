@@ -1,6 +1,6 @@
-; Descripcion del Programa:
-; Autor:
-; Dia:
+; Descripcion del Programa: Function atan2
+; Autor: Steven Alvarado Aguilar, Andres Lopéz Sánchez, Fabian Lopéz Sánchez
+; Dia: 16/ 08/ 2020
 
 .386
 .model flat,stdcall
@@ -27,8 +27,8 @@ THREE_PI_QUARTS   DD  0
 THREE_N_PI_QUARTS SDWORD  0          ; negativo 
 
 ; declarar variantes aqui  
-abso_real_part    DD 0
-abso_imag_part    DD 0
+abso_real_part    SDWORD 0
+abso_imag_part    SDWORD 0
 x_pot_2           DD 0
 y_pot_2           DD 0
 x_mov_2_right     DD 0
@@ -198,8 +198,6 @@ theta_y           DD 0
 	NotDivisionZero:
 		MOV theta_x, EAX
 
-
-
 	XOR EAX, EAX
 	XOR EBX, EBX
 
@@ -227,7 +225,7 @@ theta_y           DD 0
 	MOV EAX, REAL_MULT_IMAG
 	cdq
 	MOV EBX, mov_y_15_right
-	cmp bl,0 ; verifica el divisor
+	cmp bl, 0 ; verifica el divisor
 	je NotDivisionZero2 ; ¿cero? muestra error
 	IDIV EBX
 
@@ -241,15 +239,13 @@ theta_y           DD 0
 	; abs(eax), with no branches.
 	MOV AX, real_part
 	CMP AX, 0
-	JB Conver_Abso_real_part
+	JNB Conver_Abso_real_part
 	MOV abso_real_part, EAX
 	JMP Compare1
 
 	Conver_Abso_real_part:
 		MOV AX, real_part
-		MOV BX, 1
-		NEG BX
-		MUL BX
+		NEG AX
 		MOV abso_real_part, EAX
 
 
@@ -260,15 +256,13 @@ theta_y           DD 0
 		XOR EBX, EBX
 
 		MOV AX, imag_part
-		JB Conver_Abso_imag_part
+		JNB Conver_Abso_imag_part
 		MOV abso_imag_part, EAX
 		JMP Undefined_angle
 
 		Conver_Abso_imag_part:
-			MOV AX, real_part
-			MOV BX, 1
-			NEG BX
-			MUL BX
+			MOV AX, imag_part
+			NEG AX
 			MOV abso_imag_part, EAX
 
 ;-----------------------------------------------------------------------------------------------------------
