@@ -1,0 +1,14 @@
+﻿  Assembling ac_atan2.asm...
+ac_atan2.asm(5): error A2008: syntax error : .
+ac_atan2.asm(6): error A2008: syntax error : .
+ac_atan2.asm(7): error A2008: syntax error : .
+ac_atan2.asm(8): error A2008: syntax error : ,
+ac_atan2.asm(43): error A2144: cannot nest procedures
+ac_atan2.asm(48): error A2008: syntax error : ,
+ac_atan2.asm(113): error A2008: syntax error : ,
+ac_atan2.asm(122): error A2008: syntax error : ,
+ac_atan2.asm(174): error A2008: syntax error : ,
+ac_atan2.asm(200): error A2008: syntax error : ,
+ac_atan2.asm(206): error A2008: syntax error : INVOKE
+ac_atan2.asm(208): fatal error A1010: unmatched block nesting : main
+C:\Program Files (x86)\Microsoft Visual Studio\2019\Professional\MSBuild\Microsoft\VC\v160\BuildCustomizations\masm.targets(70,5): error MSB3721: The command "ml64.exe /c /nologo /Zi /Fo"x64\Debug\ac_atan2.obj" /W3 /errorReport:prompt  /Taac_atan2.asm" exited with code 1.

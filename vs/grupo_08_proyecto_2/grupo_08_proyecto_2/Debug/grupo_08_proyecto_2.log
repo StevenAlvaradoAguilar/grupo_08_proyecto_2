@@ -1,0 +1,3 @@
+﻿  Assembling io_functions.asm...
+c:\Irvine\SmallWin.inc(11): warning A4011: multiple .MODEL directives found : .MODEL ignored
+  grupo_08_proyecto_2.vcxproj -> D:\Users\alvar\Documents\Cursos de la universidad\Arquitectura de Computadores\Proyecto 2\Proyecto visual\grupo_08_proyecto_2\Debug\grupo_08_proyecto_2.exe
