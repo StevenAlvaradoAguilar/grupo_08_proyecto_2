@@ -1,0 +1,1 @@
+ac_atan2 PROTO, real_part:SDWORD, imag_part:SDWORD
