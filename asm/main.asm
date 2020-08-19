@@ -21,8 +21,8 @@ buffer_size = 5000
 .data
 ; declarar variables aqui
 buffer_output    WORD  buffer_size DUP(?)
-real_part       SDWORD ?
-imag_part       SDWORD ?
+real_part        SWORD ?
+imag_part        SWORD ?
 
 .code
 
@@ -36,8 +36,8 @@ main PROC
 	;Calls the class RequestIntegers and gives it the data
 	INVOKE read_values
 
-	MOV real_part, EAX	            ;The value in x
-	MOV	imag_part, EBX               ;The value in y
+	MOV real_part, AX	            ;The value in x
+	MOV	imag_part, BX               ;The value in y
 
 	;Calls the class uint8_mult and gives it the data,
 	INVOKE ac_atan2, real_part, imag_part

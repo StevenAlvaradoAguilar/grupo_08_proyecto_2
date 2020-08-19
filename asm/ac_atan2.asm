@@ -16,33 +16,33 @@ include ac_atan2.inc            ;We include an .inc file that declares a prototy
 
 .data
 ; declarar constantes aqui
-REAL_MULT_IMAG    DD   0
-PI_ROUND          DD  0
+REAL_MULT_IMAG    DD      0
+PI_ROUND          DD      0
 PI_N_ROUND        SDWORD  0          ; negativo 
-PI_HALF           DD   0
-PI_N_HALF         SDWORD   0          ; negativo 
-PI_QUARTS         DD   0
-PI_N_QUARTS       SDWORD   0          ; negativo 
-THREE_PI_QUARTS   DD  0
+PI_HALF           DD      0
+PI_N_HALF         SDWORD  0          ; negativo 
+PI_QUARTS         DD      0
+PI_N_QUARTS       SDWORD  0          ; negativo 
+THREE_PI_QUARTS   DD      0
 THREE_N_PI_QUARTS SDWORD  0          ; negativo 
 
 ; declarar variantes aqui  
-abso_real_part    SDWORD 0
-abso_imag_part    SDWORD 0
-x_pot_2           DD 0
-y_pot_2           DD 0
-x_mov_2_right     DD 0
-x_mov_5_right     DD 0
-y_mov_2_right     DD 0
-y_mov_5_right     DD 0
+abso_real_part    SDWORD  0
+abso_imag_part    SDWORD  0
+x_pot_2           DD      0
+y_pot_2           DD      0
+x_mov_2_right     DD      0
+x_mov_5_right     DD      0
+y_mov_2_right     DD      0
+y_mov_5_right     DD      0
   
-sum_x_y           DD 0 
-mov_x_15_right    DD 0  
-theta_x           DD 0 
+sum_x_y           DD      0 
+mov_x_15_right    DD      0  
+theta_x           DD      0 
   
-sum_y_x           DD 0
-mov_y_15_right    DD 0
-theta_y           DD 0
+sum_y_x           DD      0
+mov_y_15_right    DD      0
+theta_y           DD      0
 
 .code
 
